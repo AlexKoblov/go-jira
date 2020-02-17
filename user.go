@@ -65,6 +65,24 @@ func (s *UserService) Get(username string) (*User, *Response, error) {
 	return user, resp, nil
 }
 
+// Get gets user info from JIRA
+//
+// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-rest-api-2-user-get
+func (s *UserService) GetByAccountId(accountId string) (*User, *Response, error) {
+	apiEndpoint := fmt.Sprintf("/rest/api/2/user?accountId=%s", accountId)
+	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user := new(User)
+	resp, err := s.client.Do(req, user)
+	if err != nil {
+		return nil, resp, NewJiraError(resp, err)
+	}
+	return user, resp, nil
+}
+
 // Create creates an user in JIRA.
 //
 // JIRA API docs: https://docs.atlassian.com/jira/REST/cloud/#api/2/user-createUser
